@@ -22,7 +22,8 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN touch database/database.sqlite
 
-RUN chmod -R 775 storage bootstrap/cache database
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 RUN php artisan migrate --force
 
