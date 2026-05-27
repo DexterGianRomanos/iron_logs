@@ -14,10 +14,12 @@ WORKDIR /var/www/html
 
 COPY . .
 
+# Install composer safely
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
 
+# FIX permissions (VERY IMPORTANT)
 RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 80
