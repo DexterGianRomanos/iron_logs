@@ -1,7 +1,9 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpng-dev libjpeg-dev libonig-dev libxml2-dev
+    git curl zip unzip libpng-dev libjpeg-dev libonig-dev libxml2-dev libsqlite3-dev
+
+RUN docker-php-ext-install pdo pdo_sqlite
 
 RUN a2enmod rewrite
 
@@ -14,13 +16,15 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Install composer safely
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
 
-# FIX permissions (VERY IMPORTANT)
-RUN chmod -R 775 storage bootstrap/cache
+RUN touch database/database.sqlite
+
+RUN chmod -R 775 storage bootstrap/cache database
+
+RUN php artisan migrate --force
 
 EXPOSE 80
 
